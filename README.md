@@ -1,3 +1,19 @@
+##Changes made by Fae C.
+Added a reset position to 0 option in settings
+
+Changed the button layout to free up two buttons for rapid movements
+Power is now always able to be pressed. So you can stop the leadscrew while the spindle is running
+Settings: remains the same
+Fwd/rev: remains the same
+Feed/thead: combined with IN/mm into one mode button. Press to cycle between feed in mm, thread in mm, feed in inches, thread in inches
+In/MM: changed to a rapid left button, not yet implemented
+-: changed to a rapid right button. Not yet implemented
+Extra button behind the control panel: changed to -
++: remains the same
+
+The config file was changed to accomodate my particular machine
+
+
 ## Update.
 Fixed a bug I introduced earlier that causes the auto retract to lose sync on some threads (never edit code when you're tired).
 Added deceleration to end of auto retract.
