@@ -40,12 +40,11 @@
 //================================================================================
 
 // For Imperial leadscrews: pitch in Threads Per Inch (TPI)
-//#define LEADSCREW_TPI 12
+#define LEADSCREW_TPI 16
 
 // For metric leadscrews: pitch in hundredths of a millimeter (HMM)
 // Example: 200hmm = 2mm
-#define LEADSCREW_HMM 300
-
+//#define LEADSCREW_HMM 200
 
 
 
@@ -65,7 +64,7 @@
 
 // Steps and microsteps
 #define STEPPER_MICROSTEPS 8
-#define STEPPER_RESOLUTION 200
+#define STEPPER_RESOLUTION 600
 
 // Separate step and microstep settings for feed rates.  Redefine these if your
 // lathe has a separate feed drive train with a different ratio.
@@ -74,7 +73,7 @@
 
 // Step, direction and enable pins are normally active-high
 // #define INVERT_STEP_PIN true
-// #define INVERT_DIRECTION_PIN true
+#define INVERT_DIRECTION_PIN true
 #define INVERT_ENABLE_PIN true
 #define INVERT_ALARM_PIN true
 
@@ -94,7 +93,7 @@
 //================================================================================
 
 // Encoder resolution (counts per revolution)
-#define ENCODER_RESOLUTION 4000
+#define ENCODER_RESOLUTION 4096
 
 // Which encoder input to use
 #define ENCODER_USE_EQEP1

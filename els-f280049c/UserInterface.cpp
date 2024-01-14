@@ -93,6 +93,13 @@ const MESSAGE RPM =
  .displayTime = UI_REFRESH_RATE_HZ * 2.0
 };
 
+const MESSAGE RESETPOS =
+{
+ .message = { LETTER_R, LETTER_S, LETTER_T, BLANK, BLANK, LETTER_P, LETTER_O, LETTER_S },
+  .displayTime = UI_REFRESH_RATE_HZ * 2.0
+};
+
+
 extern const MESSAGE BACKLOG_PANIC_MESSAGE_2;
 const MESSAGE BACKLOG_PANIC_MESSAGE_1 =
 {
@@ -264,16 +271,41 @@ void UserInterface :: mainLoop( Uint16 currentRpm )
 
         // these should only work when the power is on
         if( this->core->isPowerOn() ) {
-            if( keys.bit.IN_MM )
+
+            if(keys.bit.MODE)
             {
-                this->metric = ! this->metric;
-                core->setFeed(loadFeedTable());
+                if(this->metric == false)
+                {
+                    if (this->thread == false)
+                    {
+                        this -> thread = true;
+                        core->setFeed(loadFeedTable());
+                    }
+                    else
+                    {
+                        this->thread = false;
+                        this ->metric = true;
+                        core->setFeed(loadFeedTable());
+                    }
+                }
+                else{
+                    if (this->thread == false)
+                    {
+                        this->thread = true;
+                        core->setFeed(loadFeedTable());
+                    }
+                    else
+                    {
+                        this->thread = false;
+                        this ->metric = false;
+                        core->setFeed(loadFeedTable());
+
+                    }
+                }
+
+
             }
-            if( keys.bit.FEED_THREAD )
-            {
-                this->thread = ! this->thread;
-                core->setFeed(loadFeedTable());
-            }
+
             if( keys.bit.FWD_REV )
             {
                 this->reverse = ! this->reverse;
@@ -284,6 +316,13 @@ void UserInterface :: mainLoop( Uint16 currentRpm )
                 beginMenu();
             }
         }
+    }
+    else
+    {
+        if( keys.bit.POWER ) {
+                    this->core->setPowerOn(!this->core->isPowerOn());
+                    clearMessage();
+                }
     }
 
 #ifdef IGNORE_ALL_KEYS_WHEN_RUNNING
@@ -301,6 +340,16 @@ void UserInterface :: mainLoop( Uint16 currentRpm )
             if( keys.bit.DOWN )
             {
                 core->setFeed(feedTable->previous());
+            }
+
+            if( keys.bit.RPD_LEFT)
+            {
+                ;
+            }
+
+            if( keys.bit.RPD_LEFT)
+            {
+                ;
             }
         }
         else
@@ -331,7 +380,7 @@ void UserInterface :: beginMenu()
 
 
 // 'set' menu states, note spacing to allow for 'sub-states'.
-enum menuStates {kCustomThread = 0, kThreadToShoulder = 0x10, kShowPosition = 0x20,  kQuitMenu = 0x100};
+enum menuStates {kCustomThread = 0, kThreadToShoulder = 0x10, kShowPosition = 0x20,  kRestetPos = 0x30, kQuitMenu = 0x100};
 
 void UserInterface :: cycleOptions(Uint16 next, Uint16 prev)
 {
@@ -369,7 +418,7 @@ void UserInterface :: menuLoop( Uint16 currentRpm )
         this-menuState++;
         break;
     case kCustomThread+1:   // wait for keypress, either select this option, move to new or timeout
-        cycleOptions(kShowPosition, kThreadToShoulder);  // link any other menu options here
+        cycleOptions(kRestetPos, kThreadToShoulder);  // link any other menu options here
         break;
     case kCustomThread+2:   // run loop
         controlPanel->showCurMode(LETTER_C, LETTER_T);
@@ -395,13 +444,30 @@ void UserInterface :: menuLoop( Uint16 currentRpm )
         this-menuState++;
         break;
     case kShowPosition+1:   // wait for keypress, either select this option, move to new or timeout
-        cycleOptions(kThreadToShoulder, kCustomThread);  // link any other menu options here
+        cycleOptions(kThreadToShoulder, kRestetPos);  // link any other menu options here
         break;
     case kShowPosition+2:   // run loop
         showAngle = !showAngle;
         clearMessage();
         this->menuState = kQuitMenu;
         break;
+
+    case kRestetPos:     // init
+        setMessage(&RESETPOS);
+        this-menuState++;
+        break;
+    case kRestetPos+1:   // wait for keypress, either select this option, move to new or timeout
+        cycleOptions(kShowPosition, kCustomThread);  // link any other menu options here
+        break;
+    case kRestetPos+2:   // run loop
+        clearMessage();
+        this->core->setPowerOn(false);
+        this->encoder->reset();
+
+
+        this->menuState = kQuitMenu;
+        break;
+
 
     // exit setup
     case kQuitMenu:
